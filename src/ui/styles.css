@@ -1,0 +1,25 @@
+:root {
+  color-scheme: dark;
+  font-family: "Georgia", serif;
+}
+body {
+  margin: 0;
+  background: radial-gradient(circle at 50% 20%, #2a1f3d, #0b0812 70%);
+  color: #d8d0e8;
+  min-height: 100vh;
+}
+.crypt {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+.tagline {
+  color: #9b8fb8;
+}
+.dropzone {
+  margin-top: 2rem;
+  padding: 3rem;
+  border: 2px dashed #6b5a8e;
+  border-radius: 8px;
+}
