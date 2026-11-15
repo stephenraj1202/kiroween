@@ -50,6 +50,18 @@ End`);
     expect(r.doc.form.props.Icon).toBeUndefined();
   });
 
+  it("strips trailing VB comments from values", () => {
+    const r = parseFrm(`VERSION 5.00
+Begin VB.Form F
+   Visible = 0 'False
+   Caption = "Hi" 'comment
+   Enabled = -1  'True
+End`);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.doc.form.props).toEqual({ Visible: 0, Caption: "Hi", Enabled: -1 });
+  });
+
   it("fails with a line number on a missing header", () => {
     const r = parseFrm("Begin VB.Form F\nEnd");
     expect(r).toEqual({ ok: false, error: { message: expect.any(String), line: 1 } });

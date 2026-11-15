@@ -23,14 +23,20 @@ const NUMBER_RE = /^-?\d+(\.\d+)?$/;
 function parseValue(raw: string): PropValue | undefined {
   const v = raw.trim();
   if (v.startsWith('"')) {
+    const m = /^"((?:[^"]|"")*)"\s*(.*)$/.exec(v);
+    if (!m) throw new Error("bad string literal");
+    const rest = m[2];
     // binary resource: "Form1.frx":0000
-    if (/^"(?:[^"]|"")*"\s*:\s*[0-9A-Fa-f]+$/.test(v)) return undefined;
-    if (!/^"(?:[^"]|"")*"$/.test(v)) throw new Error("bad string literal");
-    return v.slice(1, -1).replace(/""/g, '"');
+    if (/^:\s*[0-9A-Fa-f]+/.test(rest)) return undefined;
+    // a trailing VB comment (e.g. 'False) is allowed
+    if (rest !== "" && !rest.startsWith("'")) throw new Error("bad string literal");
+    return m[1].replace(/""/g, '"');
   }
-  if (NUMBER_RE.test(v)) return Number(v);
+  // Real forms write e.g. `Visible = 0 'False`; drop the trailing comment.
+  const bare = v.replace(/\s*'.*$/, "");
+  if (NUMBER_RE.test(bare)) return Number(bare);
   // True/False/hex etc. are kept as raw text.
-  return v;
+  return bare;
 }
 
 export function parseFrm(text: string): ParseResult {
